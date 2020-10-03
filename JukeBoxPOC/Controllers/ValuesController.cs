@@ -36,6 +36,19 @@ namespace JukeBoxPOC.Controllers
             return parties;
         }
 
+        [HttpGet("videos/{party}")]
+        public IEnumerable<Queue> GetQueueAsync(string party)
+        {
+            IEnumerable<Queue> queues;
+
+            using (var connection = new MySqlConnection("Server=test1.ce8cn9mhhgds.us-east-1.rds.amazonaws.com;Database=JukeBox;Uid=Wallen;Pwd=MyRDSdb1;Allow User Variables=True;"))
+            {
+                queues = connection.Query<Queue>($"SELECT * FROM QueuePOC Where PartyName = '{party}';").ToList();
+            }
+
+            return queues;
+        }
+
         [HttpPost("AddToQueue")]
         public async Task AddToQueue([FromBody] Queue queue)
         {

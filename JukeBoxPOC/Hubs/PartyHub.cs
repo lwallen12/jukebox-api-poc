@@ -1,5 +1,7 @@
-﻿using JukeBoxPOC.Interfaces;
+﻿using Dapper;
+using JukeBoxPOC.Interfaces;
 using Microsoft.AspNetCore.SignalR;
+using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -34,6 +36,25 @@ namespace JukeBoxPOC.Hubs
 
         public async Task AddToQueue(Queue queue)
         {
+            string sql = @"
+                    INSERT INTO QueuePOC (PartyName, VideoId, Title, Description,
+                                             ImageURL, ChannelTitle, Vote) VALUES 
+                                         (@PartyName, @VideoId, @Title, @Description,
+                                             @ImageURL, @ChannelTitle, @Vote);
+                ";
+
+            using (var connection = new MySqlConnection("Server=test1.ce8cn9mhhgds.us-east-1.rds.amazonaws.com;Database=JukeBox;Uid=Wallen;Pwd=MyRDSdb1;Allow User Variables=True;"))
+            {
+                try
+                {
+                    connection.Execute(sql, queue);
+                } catch (MySqlException ex)
+                {
+                    //maybe broadcast error to the client who had tried to add this video?
+                }
+                
+            }
+
             await Clients.Group(queue.PartyName).SendAsync("BroadCast", queue);
             //await Clients.All.SendAsync("Broadcast", queue);
         }
