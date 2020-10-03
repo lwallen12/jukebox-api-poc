@@ -34,8 +34,8 @@ namespace JukeBoxPOC.Hubs
 
         public async Task AddToQueue(Queue queue)
         {
-            //await Clients.Group(queue.PartyName).SendAsync("BroadCast", queue);
-            await Clients.All.SendAsync("Broadcast", queue);
+            await Clients.Group(queue.PartyName).SendAsync("BroadCast", queue);
+            //await Clients.All.SendAsync("Broadcast", queue);
         }
 
 
