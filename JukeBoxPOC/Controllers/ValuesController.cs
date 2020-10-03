@@ -3,7 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
+using JukeBoxPOC.Hubs;
+using JukeBoxPOC.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using MySql.Data.MySqlClient;
 
 namespace JukeBoxPOC.Controllers
@@ -11,6 +14,14 @@ namespace JukeBoxPOC.Controllers
     [Route("api/[controller]")]
     public class ValuesController : ControllerBase
     {
+
+        //private readonly IHubContext<PartyHub, IPartyClient> _partyHub;
+
+        //public ValuesController(IHubContext<PartyHub, IPartyClient> partyHub)
+        //{
+        //    _partyHub = partyHub;
+        //}
+
         // GET api/values
         [HttpGet("{user}")]
         public IEnumerable<string> Get(string user)
@@ -24,6 +35,24 @@ namespace JukeBoxPOC.Controllers
 
             return parties;
         }
+
+        [HttpPost("AddToQueue")]
+        public async Task AddToQueue([FromBody] Queue queue)
+        {
+            //await _partyHub.Clients.Group(queue.PartyName).
+        }
+
+        [HttpPost("JoinGroup")]
+        public async Task JoinGroup()
+        {
+            //this._partyHub.Groups.AddToGroupAsync()
+        }
+
+        //[HttpPost("Add")]
+        //public async Task AddToQueue([FromBody] Queue queue)
+        //{
+            
+        //}
 
         //// GET api/values/5
         //[HttpGet("{id}")]
