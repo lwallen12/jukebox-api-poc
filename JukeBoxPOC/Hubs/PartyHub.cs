@@ -50,7 +50,7 @@ namespace JukeBoxPOC.Hubs
                     connection.Execute(sql, queue);
                 } catch (MySqlException ex)
                 {
-                    //maybe broadcast error to the client who had tried to add this video?
+                    //maybe broadcast error to the client who had tried to add this video?  
                 }
                 
             }
@@ -59,6 +59,54 @@ namespace JukeBoxPOC.Hubs
             //await Clients.All.SendAsync("Broadcast", queue);
         }
 
+        public async Task Vote(VotePackage votePackage)
+        {
+
+           await JoinParty(votePackage.PartyName);
+
+            string sql;
+
+            if (votePackage.Action == "Up")
+            {
+                sql = @"UPDATE QueuePOC 
+                            SET Vote = (Vote + 1)
+                        WHERE PartyName = @PartyName
+                          AND VideoId = @VideoId";
+            }
+            else
+            {
+                sql = @"UPDATE QueuePOC 
+                            SET Vote = (Vote - 1)
+                        WHERE PartyName = @PartyName
+                          AND VideoId = @VideoId";
+            }
+
+            using (var connection = new MySqlConnection("Server=test1.ce8cn9mhhgds.us-east-1.rds.amazonaws.com;Database=JukeBox;Uid=Wallen;Pwd=MyRDSdb1;Allow User Variables=True;"))
+            {
+                try
+                {
+                    connection.Execute(sql, votePackage);
+                }
+                catch (MySqlException ex)
+                {
+                    //maybe broadcast error to the client who had tried to add this video?  
+                }
+
+            }
+
+            //await Clients.Group(queue.PartyName).SendAsync("BroadCast", queue);
+            //await Clients.Group(votePackage.PartyName).SendAsync("NewVote", votePackage);
+            await SendVote(votePackage);
+
+        }
+
+        public async Task SendVote(VotePackage votePackage)
+        {
+            //await JoinParty(votePackage.PartyName);
+
+            // await Clients.Group(votePackage.PartyName).SendAsync("NewVote", votePackage);
+            await Clients.All.SendAsync("newvote", votePackage);
+        }
 
     }
 
